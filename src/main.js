@@ -2,7 +2,7 @@ import { createGameState } from './game-state.js';
 import { createPlayer } from './player.js';
 import { createGameInput } from './input.js';
 import { currentLine, advanceDialogue, isDialogueDone } from './dialogue.js';
-import { drawTextBar } from './render.js';
+import { drawTextBar, drawToast } from './render.js';
 import titleScene from './scenes/title.js';
 import mapScene from './scenes/map.js';
 import lakeScene from './scenes/lake.js';
@@ -34,6 +34,7 @@ const game = {
   input,
   visited: {},
   dialogue: null,
+  toast: null,
   currentScene: null,
 
   switchScene(name) {
@@ -46,6 +47,7 @@ const game = {
     game.player = createPlayer(152, 84);
     game.visited = {};
     game.dialogue = null;
+    game.toast = null;
     game.switchScene('title');
   },
 };
@@ -53,6 +55,10 @@ const game = {
 let lastTimestamp = null;
 
 function update(dt) {
+  if (game.toast) {
+    game.toast.timer -= dt;
+    if (game.toast.timer <= 0) game.toast = null;
+  }
   if (game.dialogue) {
     if (game.input.consumeInteract()) {
       advanceDialogue(game.dialogue);
@@ -65,6 +71,7 @@ function update(dt) {
 
 function render() {
   game.currentScene.render(ctx, game);
+  if (game.toast) drawToast(ctx, game.toast.text);
   if (game.dialogue) {
     const line = currentLine(game.dialogue);
     if (line) drawTextBar(ctx, line);

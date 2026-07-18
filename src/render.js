@@ -89,6 +89,18 @@ export function drawTextBar(ctx, text) {
   ctx.fillText('[E]', 296, 166);
 }
 
+export function drawToast(ctx, text) {
+  ctx.fillStyle = 'rgba(10, 14, 18, 0.8)';
+  ctx.fillRect(40, 128, 240, 14);
+  ctx.strokeStyle = '#4a6a7a';
+  ctx.strokeRect(40.5, 128.5, 239, 13);
+  ctx.fillStyle = '#ffe97a';
+  ctx.font = '7px monospace';
+  ctx.textBaseline = 'top';
+  const w = ctx.measureText(text).width;
+  ctx.fillText(text, 160 - w / 2, 132);
+}
+
 function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
   const words = text.split(' ');
   let line = '';

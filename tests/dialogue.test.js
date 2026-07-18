@@ -2,6 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   LINES,
+  PICKUP_LINES,
   createDialogue,
   currentLine,
   advanceDialogue,
@@ -15,6 +16,13 @@ test('all narrative beats exist and are non-empty', () => {
     assert.ok(Array.isArray(LINES[key]), `${key} missing`);
     assert.ok(LINES[key].length > 0, `${key} empty`);
     for (const line of LINES[key]) assert.equal(typeof line, 'string');
+  }
+});
+
+test('every item kind has a pickup line', () => {
+  for (const kind of ['line', 'bottle', 'cap', 'bag']) {
+    assert.equal(typeof PICKUP_LINES[kind], 'string');
+    assert.ok(PICKUP_LINES[kind].length > 0);
   }
 });
 

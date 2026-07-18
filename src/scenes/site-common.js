@@ -3,7 +3,7 @@ import { nearestItemInRange, PICKUP_RADIUS } from '../items.js';
 import {
   collectItem, isItemCollected, siteProgress, isSiteComplete, SAMPLES_PER_SITE,
 } from '../game-state.js';
-import { LINES, createDialogue } from '../dialogue.js';
+import { LINES, PICKUP_LINES, createDialogue } from '../dialogue.js';
 import { drawPlayer, drawItem, drawExitMarker, drawHud } from '../render.js';
 
 export const SCENE_BOUNDS = { x: 0, y: 0, w: 320, h: 180 };
@@ -42,10 +42,17 @@ export function createSiteScene({ siteId, label, items, drawBackground, bounds =
 
       if (game.input.consumeInteract()) {
         if (scene.nearItem) {
+          const item = scene.nearItem;
           const wasComplete = isSiteComplete(game.state, siteId);
-          collectItem(game.state, siteId, scene.nearItem.id);
-          if (!wasComplete && isSiteComplete(game.state, siteId)) {
+          collectItem(game.state, siteId, item.id);
+          const nowComplete = isSiteComplete(game.state, siteId);
+          if (!wasComplete && nowComplete) {
             game.dialogue = createDialogue(LINES[siteId + 'Done']);
+          } else {
+            game.toast = {
+              text: `${PICKUP_LINES[item.kind]} (${siteProgress(game.state, siteId)}/${SAMPLES_PER_SITE})`,
+              timer: 2.2,
+            };
           }
         } else if (scene.nearExit) {
           game.switchScene('map');

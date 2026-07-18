@@ -42,6 +42,13 @@ export const LINES = {
   ],
 };
 
+export const PICKUP_LINES = {
+  line: 'Fishing line. Wound tight, cut loose.',
+  bottle: 'Another bottle. It would have outlived the tree.',
+  cap: 'A bottle cap, sand-scoured smooth.',
+  bag: 'A plastic bag, heavy with seawater.',
+};
+
 export function createDialogue(lines) {
   return { lines: [...lines], index: 0 };
 }
