@@ -86,9 +86,10 @@ function drawBackground(ctx) {
   ctx.fillRect(100, 150, 30, 30);
   // sandy shoreline
   ctx.fillStyle = '#d8c48a';
-  ctx.fillRect(0, 178, 100, 2);
-  ctx.fillRect(96, 150, 4, 30);
-  ctx.fillRect(44, 130, 4, 4);
+  ctx.fillRect(46, 110, 54, 2);   // along the top edge of the upper bay arm (x 46-100 at y 112)
+  ctx.fillRect(100, 128, 2, 22);  // along the bay's right edge (grass side), y 128-150
+  ctx.fillRect(102, 148, 28, 2);  // along the top of the water pocket (x 100-130 at y 150)
+  ctx.fillRect(130, 150, 2, 30);  // along the water pocket's right edge, y 150-180
   // wave highlights
   ctx.fillStyle = '#4a8cb5';
   for (const [wx, wy] of [[14, 140], [40, 152], [66, 146], [20, 165], [60, 168], [82, 158]]) {
