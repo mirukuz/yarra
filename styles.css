@@ -1,0 +1,16 @@
+body {
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: #0c1116;
+}
+
+#game-canvas {
+  width: 640px;
+  height: 360px;
+  image-rendering: pixelated;
+  background: #0c1116;
+  display: block;
+}
