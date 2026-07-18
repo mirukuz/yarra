@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { keysToVector, createInteractLatch } from '../src/input.js';
+import { keysToVector, createInteractLatch, dirsToVector, mergeVectors } from '../src/input.js';
 
 test('no keys gives zero vector', () => {
   assert.deepEqual(keysToVector(new Set()), { dx: 0, dy: 0 });
@@ -35,4 +35,29 @@ test('two presses before a consume still yield one consume', () => {
   latch.press();
   assert.equal(latch.consume(), true);
   assert.equal(latch.consume(), false);
+});
+
+test('dirsToVector maps each of the 8 directions correctly', () => {
+  assert.deepEqual(dirsToVector(new Set()), { dx: 0, dy: 0 });
+  assert.deepEqual(dirsToVector(new Set(['up'])), { dx: 0, dy: -1 });
+  assert.deepEqual(dirsToVector(new Set(['down'])), { dx: 0, dy: 1 });
+  assert.deepEqual(dirsToVector(new Set(['left'])), { dx: -1, dy: 0 });
+  assert.deepEqual(dirsToVector(new Set(['right'])), { dx: 1, dy: 0 });
+  assert.deepEqual(dirsToVector(new Set(['up-left'])), { dx: -1, dy: -1 });
+  assert.deepEqual(dirsToVector(new Set(['down-right'])), { dx: 1, dy: 1 });
+});
+
+test('dirsToVector combining two base directions still clamps to [-1,1]', () => {
+  assert.deepEqual(dirsToVector(new Set(['left', 'up'])), { dx: -1, dy: -1 });
+});
+
+test('dirsToVector ignores unknown direction keys', () => {
+  assert.deepEqual(dirsToVector(new Set(['bogus'])), { dx: 0, dy: 0 });
+});
+
+test('mergeVectors sums and clamps each axis to [-1,1]', () => {
+  assert.deepEqual(mergeVectors({ dx: 1, dy: 0 }, { dx: 0, dy: -1 }), { dx: 1, dy: -1 });
+  assert.deepEqual(mergeVectors({ dx: 1, dy: 0 }, { dx: 1, dy: 0 }), { dx: 1, dy: 0 });
+  assert.deepEqual(mergeVectors({ dx: 1, dy: 0 }, { dx: -1, dy: 0 }), { dx: 0, dy: 0 });
+  assert.deepEqual(mergeVectors({ dx: 0, dy: 0 }, { dx: 0, dy: 0 }), { dx: 0, dy: 0 });
 });

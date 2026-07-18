@@ -14,3 +14,68 @@ body {
   background: #0c1116;
   display: block;
 }
+
+#touch-controls {
+  display: none;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 20px;
+  justify-content: space-between;
+  align-items: flex-end;
+  pointer-events: none;
+  z-index: 20;
+}
+
+body.touch-controls-active #touch-controls {
+  display: flex;
+}
+
+#touch-dpad {
+  display: grid;
+  grid-template-columns: repeat(3, 48px);
+  grid-template-rows: repeat(3, 48px);
+  gap: 4px;
+  pointer-events: auto;
+}
+
+#touch-dpad button {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  border: none;
+  background: rgba(232, 240, 242, 0.18);
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+#touch-dpad button:active {
+  background: rgba(232, 240, 242, 0.4);
+}
+
+.touch-dpad-center {
+  width: 48px;
+  height: 48px;
+}
+
+#touch-interact {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(122, 223, 200, 0.35);
+  color: #0c1116;
+  font-family: monospace;
+  font-weight: bold;
+  font-size: 20px;
+  touch-action: none;
+  pointer-events: auto;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+#touch-interact:active {
+  background: rgba(122, 223, 200, 0.6);
+}

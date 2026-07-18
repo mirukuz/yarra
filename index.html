@@ -7,6 +7,20 @@
 </head>
 <body>
 <canvas id="game-canvas" width="1280" height="720"></canvas>
+<div id="touch-controls">
+  <div id="touch-dpad">
+    <button data-dir="up-left" aria-label="up-left"></button>
+    <button data-dir="up" aria-label="up"></button>
+    <button data-dir="up-right" aria-label="up-right"></button>
+    <button data-dir="left" aria-label="left"></button>
+    <div class="touch-dpad-center"></div>
+    <button data-dir="right" aria-label="right"></button>
+    <button data-dir="down-left" aria-label="down-left"></button>
+    <button data-dir="down" aria-label="down"></button>
+    <button data-dir="down-right" aria-label="down-right"></button>
+  </div>
+  <button id="touch-interact" aria-label="interact">E</button>
+</div>
 <script type="module" src="src/main.js"></script>
 </body>
 </html>

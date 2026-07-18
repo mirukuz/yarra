@@ -1,6 +1,6 @@
 import { createGameState } from './game-state.js';
 import { createPlayer } from './player.js';
-import { createKeyboardInput } from './input.js';
+import { createGameInput } from './input.js';
 import { currentLine, advanceDialogue, isDialogueDone } from './dialogue.js';
 import { drawTextBar } from './render.js';
 import titleScene from './scenes/title.js';
@@ -25,7 +25,7 @@ const SCENES = {
   ending: endingScene,
 };
 
-const input = createKeyboardInput();
+const input = createGameInput();
 input.attach();
 
 const game = {
