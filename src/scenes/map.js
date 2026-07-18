@@ -7,21 +7,69 @@ import { drawPlayer, drawHud } from '../render.js';
 
 const BOUNDS = { x: 0, y: 0, w: 320, h: 180 };
 const NODE_RADIUS = 18;
+const SPAWN = { x: 156, y: 88 };
 
 const NODES = [
-  { id: 'lake', label: 'LAKE', x: 55, y: 105, color: '#3a7ca5' },
-  { id: 'forest', label: 'FOREST', x: 250, y: 40, color: '#2e5231' },
-  { id: 'ocean', label: 'BEACH', x: 75, y: 155, color: '#2f6f95' },
+  { id: 'lake', label: 'ALBERT PARK', x: 55, y: 105, color: '#3a7ca5' },
+  { id: 'forest', label: 'DANDENONG', x: 250, y: 40, color: '#2e5231' },
+  { id: 'ocean', label: 'ST KILDA', x: 75, y: 155, color: '#2f6f95' },
   { id: 'datacenter', label: 'DATA CENTRE', x: 255, y: 110, color: '#5a5a66' },
 ];
 
+// deterministic pseudo-scatter (no per-frame randomness, so nothing flickers)
+function scatterDots(ctx, x0, y0, x1, y1, step, mod, threshold, size) {
+  for (let gx = x0; gx < x1; gx += step) {
+    for (let gy = y0; gy < y1; gy += step + 3) {
+      if ((gx * 7 + gy * 13) % mod < threshold) {
+        ctx.fillRect(gx, gy, size, size);
+      }
+    }
+  }
+}
+
+function drawDashedPath(ctx, x0, y0, x1, y1) {
+  const dx = x1 - x0;
+  const dy = y1 - y0;
+  const dist = Math.hypot(dx, dy);
+  const steps = Math.max(1, Math.floor(dist / 7));
+  ctx.fillStyle = '#8a6a43';
+  for (let i = 0; i <= steps; i += 2) {
+    const t = i / steps;
+    ctx.fillRect(Math.round(x0 + dx * t), Math.round(y0 + dy * t), 2, 2);
+  }
+}
+
+function drawTree(ctx, x, y, scale = 1) {
+  const s = scale;
+  ctx.fillStyle = '#5a3d23';
+  ctx.fillRect(x - 1, y + 2 * s, 2, 3 * s);
+  ctx.fillStyle = '#3d7a3a';
+  ctx.fillRect(x - 4 * s, y, 8 * s, 3 * s);
+  ctx.fillStyle = '#4a8a47';
+  ctx.fillRect(x - 3 * s, y - 3 * s, 6 * s, 3 * s);
+  ctx.fillStyle = '#5a9a57';
+  ctx.fillRect(x - 2 * s, y - 5 * s, 4 * s, 3 * s);
+}
+
 function drawBackground(ctx) {
-  // land
+  // land base
   ctx.fillStyle = '#4a7a47';
   ctx.fillRect(0, 0, 320, 180);
   ctx.fillStyle = '#548a51';
   ctx.fillRect(0, 0, 320, 40);
   ctx.fillRect(180, 120, 140, 60);
+  // range/forest backdrop tint around the Dandenong ranges
+  ctx.fillStyle = '#3d6b3a';
+  ctx.fillRect(205, 6, 100, 62);
+
+  // sparse grass tufts across the open land
+  ctx.fillStyle = '#3f6b3d';
+  scatterDots(ctx, 4, 4, 316, 176, 11, 29, 6, 1);
+
+  // dashed dirt paths from the spawn area to each node (drawn under water/city
+  // so they read as leading up to the shoreline / disappearing into town)
+  for (const node of NODES) drawDashedPath(ctx, SPAWN.x, SPAWN.y, node.x, node.y);
+
   // Yarra river — winds from top-right to bottom-left
   ctx.fillStyle = '#3a7ca5';
   ctx.fillRect(200, 0, 16, 50);
@@ -30,16 +78,121 @@ function drawBackground(ctx) {
   ctx.fillRect(60, 60, 68, 14);
   ctx.fillRect(20, 68, 48, 60);
   ctx.fillRect(0, 120, 40, 14);
-  // city block cluster near the river mouth
+
+  // Port Phillip Bay — fills the bottom-left corner, fed by the river mouth
+  ctx.fillStyle = '#3a7ca5';
+  ctx.fillRect(0, 128, 100, 52);
+  ctx.fillRect(0, 112, 46, 20);
+  ctx.fillRect(100, 150, 30, 30);
+  // sandy shoreline
+  ctx.fillStyle = '#d8c48a';
+  ctx.fillRect(0, 178, 100, 2);
+  ctx.fillRect(96, 150, 4, 30);
+  ctx.fillRect(44, 130, 4, 4);
+  // wave highlights
+  ctx.fillStyle = '#4a8cb5';
+  for (const [wx, wy] of [[14, 140], [40, 152], [66, 146], [20, 165], [60, 168], [82, 158]]) {
+    ctx.fillRect(wx, wy, 4, 1);
+  }
+
+  // small pond by Albert Park
+  ctx.fillStyle = '#3a7ca5';
+  ctx.fillRect(38, 118, 14, 9);
+  ctx.fillStyle = '#4a8cb5';
+  ctx.fillRect(40, 121, 4, 1);
+
+  // Dandenong forest cluster
+  for (const [tx, ty, ts] of [
+    [232, 24, 1], [244, 16, 1.2], [258, 26, 1], [268, 14, 1],
+    [238, 40, 1], [262, 42, 1.1], [278, 30, 1],
+  ]) drawTree(ctx, tx, ty, ts);
+  // a few lone trees scattered on the open grass
+  for (const [tx, ty] of [[24, 24], [110, 150], [190, 34], [130, 100]]) drawTree(ctx, tx, ty, 0.8);
+
+  // CBD tower cluster near the river bend
+  const towers = [
+    [138, 62, 8, 20], [150, 56, 8, 26], [162, 64, 8, 18], [172, 58, 7, 24],
+  ];
   ctx.fillStyle = '#7a95a8';
-  for (const [bx, by, bw, bh] of [[140, 70, 8, 14], [152, 66, 8, 18], [164, 72, 8, 12]]) {
-    ctx.fillRect(bx, by, bw, bh);
+  for (const [bx, by, bw, bh] of towers) ctx.fillRect(bx, by, bw, bh);
+  ctx.fillStyle = '#5f7a8c';
+  for (const [bx, by, bw] of towers) ctx.fillRect(bx, by, bw, 2);
+  // lit windows
+  ctx.fillStyle = '#ffe97a';
+  for (const [bx, by, bw, bh] of towers) {
+    for (let wy = by + 4; wy < by + bh - 2; wy += 5) {
+      for (let wx = bx + 1; wx < bx + bw - 1; wx += 3) {
+        if ((wx + wy) % 5 < 3) ctx.fillRect(wx, wy, 1, 1);
+      }
+    }
+  }
+}
+
+function drawNodeTile(ctx, node, game) {
+  const { x: cx, y: cy } = node;
+  switch (node.id) {
+    case 'lake': {
+      ctx.fillStyle = '#3a7ca5';
+      ctx.fillRect(cx - 8, cy - 8, 16, 16);
+      ctx.fillStyle = '#4a8cb5';
+      ctx.fillRect(cx - 6, cy - 3, 4, 1);
+      ctx.fillRect(cx + 2, cy + 3, 4, 1);
+      // tiny black swan
+      ctx.fillStyle = '#1a1a1a';
+      ctx.fillRect(cx - 3, cy + 1, 5, 3);
+      ctx.fillRect(cx + 1, cy - 3, 1, 4);
+      ctx.fillRect(cx + 1, cy - 4, 2, 1);
+      ctx.fillStyle = '#cc3311';
+      ctx.fillRect(cx + 3, cy - 4, 1, 1);
+      break;
+    }
+    case 'forest': {
+      ctx.fillStyle = '#2e5231';
+      ctx.fillRect(cx - 8, cy - 8, 16, 16);
+      ctx.fillStyle = '#5a3d23';
+      ctx.fillRect(cx - 1, cy + 3, 2, 4);
+      ctx.fillStyle = '#3d7a3a';
+      ctx.fillRect(cx - 4, cy + 1, 8, 3);
+      ctx.fillStyle = '#4a8a47';
+      ctx.fillRect(cx - 3, cy - 2, 6, 3);
+      ctx.fillStyle = '#5a9a57';
+      ctx.fillRect(cx - 2, cy - 5, 4, 3);
+      break;
+    }
+    case 'ocean': {
+      ctx.fillStyle = '#2f6f95';
+      ctx.fillRect(cx - 8, cy - 8, 16, 10);
+      ctx.fillStyle = '#d8c48a';
+      ctx.fillRect(cx - 8, cy + 2, 16, 6);
+      ctx.fillStyle = '#e8f0f2';
+      ctx.fillRect(cx - 6, cy - 2, 3, 1);
+      ctx.fillRect(cx - 2, cy - 4, 3, 1);
+      ctx.fillRect(cx + 2, cy - 1, 3, 1);
+      break;
+    }
+    case 'datacenter': {
+      const unlocked = isDatacenterUnlocked(game.state);
+      ctx.fillStyle = '#2a2a33';
+      ctx.fillRect(cx - 8, cy - 8, 16, 16);
+      ctx.fillStyle = '#5a5a66';
+      ctx.fillRect(cx - 5, cy - 5, 10, 10);
+      ctx.fillStyle = '#3a3a45';
+      ctx.fillRect(cx - 5, cy - 2, 10, 1);
+      ctx.fillRect(cx - 5, cy + 1, 10, 1);
+      ctx.fillStyle = unlocked ? '#7adfc8' : '#ff5533';
+      ctx.fillRect(cx - 3, cy - 4, 1, 1);
+      ctx.fillRect(cx - 3, cy - 1, 1, 1);
+      break;
+    }
+    default: {
+      ctx.fillStyle = node.color;
+      ctx.fillRect(cx - 8, cy - 8, 16, 16);
+    }
   }
 }
 
 function drawNode(ctx, node, game) {
-  ctx.fillStyle = node.color;
-  ctx.fillRect(node.x - 8, node.y - 8, 16, 16);
+  drawNodeTile(ctx, node, game);
   ctx.strokeStyle = '#e8f0f2';
   ctx.strokeRect(node.x - 8.5, node.y - 8.5, 17, 17);
   ctx.fillStyle = '#e8f0f2';
