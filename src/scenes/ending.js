@@ -4,7 +4,9 @@ import { ITEM_SPRITES, drawSprite } from '../render.js';
 const scene = {
   id: 'ending',
 
-  enter() {},
+  enter(game) {
+    game.input.consumeInteract();
+  },
 
   update(dt, game) {
     if (game.input.consumeInteract()) game.resetAll();

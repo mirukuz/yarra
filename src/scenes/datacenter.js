@@ -16,6 +16,7 @@ const scene = {
     game.player.x = 10;
     game.player.y = 100;
     scene.sequenceTimer = 0;
+    scene.nearGate = false;
     if (!game.visited.datacenter) {
       game.visited.datacenter = true;
       game.dialogue = createDialogue(LINES.datacenterEnter);
