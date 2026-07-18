@@ -55,4 +55,5 @@ export default createSiteScene({
     { id: 'bag-seaweed', kind: 'bag', x: 240, y: 146 },  // in the seaweed pile
   ],
   drawBackground,
+  bounds: { x: 0, y: 104, w: 320, h: 76 },
 });

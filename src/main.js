@@ -13,6 +13,7 @@ import endingScene from './scenes/ending.js';
 
 const canvas = document.getElementById('game-canvas');
 const ctx = canvas.getContext('2d');
+ctx.scale(4, 4);
 
 const SCENES = {
   title: titleScene,

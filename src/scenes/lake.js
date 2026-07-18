@@ -27,6 +27,12 @@ function drawBackground(ctx) {
   ctx.fillRect(240, 140, 28, 4);
   ctx.fillRect(242, 144, 3, 8);
   ctx.fillRect(263, 144, 3, 8);
+  // small jetty
+  ctx.fillStyle = '#8a6a43';
+  ctx.fillRect(150, 118, 30, 6);
+  ctx.fillStyle = '#6e5433';
+  ctx.fillRect(154, 124, 3, 6);
+  ctx.fillRect(172, 124, 3, 6);
   // buoy
   ctx.fillStyle = '#ff5533';
   ctx.fillRect(160, 84, 6, 6);
@@ -48,7 +54,8 @@ export default createSiteScene({
     { id: 'line-reeds', kind: 'line', x: 34, y: 122 },   // wound through the reeds
     { id: 'line-shore', kind: 'line', x: 190, y: 128 },  // floating at the waterline
     { id: 'line-bench', kind: 'line', x: 252, y: 150 },  // under the park bench
-    { id: 'line-buoy', kind: 'line', x: 163, y: 94 },    // snagged on the buoy
+    { id: 'line-jetty', kind: 'line', x: 166, y: 122 },  // snagged at the foot of the jetty
   ],
   drawBackground,
+  bounds: { x: 0, y: 114, w: 320, h: 66 },
 });

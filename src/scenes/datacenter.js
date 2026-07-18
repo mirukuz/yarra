@@ -2,7 +2,7 @@ import { movePlayer } from '../player.js';
 import { LINES, createDialogue } from '../dialogue.js';
 import { drawPlayer, drawHud } from '../render.js';
 
-const BOUNDS = { x: 0, y: 24, w: 320, h: 132 }; // corridor band
+const BOUNDS = { x: 0, y: 64, w: 320, h: 58 }; // corridor band
 const GATE = { x: 296, y: 70, w: 14, h: 60 };
 const GATE_RADIUS = 24;
 const SEQUENCE_SECONDS = 2.5;

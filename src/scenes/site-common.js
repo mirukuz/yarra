@@ -12,7 +12,7 @@ const EXIT_CENTER = { x: EXIT_POS.x + 8, y: EXIT_POS.y + 6 };
 const EXIT_RADIUS = 20;
 const SPAWN = { x: 152, y: 132 };
 
-export function createSiteScene({ siteId, label, items, drawBackground }) {
+export function createSiteScene({ siteId, label, items, drawBackground, bounds = SCENE_BOUNDS }) {
   const scene = {
     id: siteId,
     nearItem: null,
@@ -29,7 +29,7 @@ export function createSiteScene({ siteId, label, items, drawBackground }) {
 
     update(dt, game) {
       const { dx, dy } = game.input.getVector();
-      movePlayer(game.player, dx, dy, dt, SCENE_BOUNDS);
+      movePlayer(game.player, dx, dy, dt, bounds);
 
       scene.nearItem = nearestItemInRange(
         game.player, items,
