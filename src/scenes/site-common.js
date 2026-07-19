@@ -1,26 +1,36 @@
-import { movePlayer } from '../player.js';
+import {
+  movePlayer, damagePlayer, updateInvincibility, isInvincible, resetHearts,
+} from '../player.js';
+import { createHazard, updateHazard } from '../hazard.js';
+import { rectsOverlap } from '../collision.js';
 import { nearestItemInRange, PICKUP_RADIUS } from '../items.js';
 import {
   collectItem, isItemCollected, siteProgress, isSiteComplete, SAMPLES_PER_SITE,
 } from '../game-state.js';
 import { LINES, PICKUP_LINES, createDialogue } from '../dialogue.js';
-import { drawPlayer, drawItem, drawExitMarker, drawHud } from '../render.js';
+import { drawPlayer, drawItem, drawExitMarker, drawHud, drawHazard, drawHearts } from '../render.js';
 
 export const SCENE_BOUNDS = { x: 0, y: 0, w: 320, h: 180 };
 export const EXIT_POS = { x: 152, y: 162 }; // marker top-left; interact radius from its center
 const EXIT_CENTER = { x: EXIT_POS.x + 8, y: EXIT_POS.y + 6 };
 const EXIT_RADIUS = 20;
 const SPAWN = { x: 152, y: 132 };
+const KNOCKOUT_TOAST = 'Too risky — back to the trailhead. Samples are safe.';
 
-export function createSiteScene({ siteId, label, items, drawBackground, bounds = SCENE_BOUNDS }) {
+export function createSiteScene({
+  siteId, label, items, drawBackground, bounds = SCENE_BOUNDS, hazards = [],
+}) {
   const scene = {
     id: siteId,
     nearItem: null,
     nearExit: false,
+    hazards: [],
 
     enter(game) {
       game.player.x = SPAWN.x;
       game.player.y = SPAWN.y;
+      resetHearts(game.player);
+      scene.hazards = hazards.map(createHazard);
       if (!game.visited[siteId]) {
         game.visited[siteId] = true;
         game.dialogue = createDialogue(LINES[siteId + 'Enter']);
@@ -56,6 +66,25 @@ export function createSiteScene({ siteId, label, items, drawBackground, bounds =
           }
         } else if (scene.nearExit) {
           game.switchScene('map');
+          return;
+        }
+      }
+
+      // hazards move and hurt AFTER pickup handling, so a same-frame pickup counts
+      for (const hz of scene.hazards) updateHazard(hz, dt);
+      updateInvincibility(game.player, dt);
+      if (!isInvincible(game.player)) {
+        for (const hz of scene.hazards) {
+          if (rectsOverlap(game.player, hz)) {
+            damagePlayer(game.player);
+            if (game.player.hearts <= 0) {
+              game.player.x = SPAWN.x;
+              game.player.y = SPAWN.y;
+              resetHearts(game.player);
+              game.toast = { text: KNOCKOUT_TOAST, timer: 2.2 };
+            }
+            break;
+          }
         }
       }
     },
@@ -68,8 +97,13 @@ export function createSiteScene({ siteId, label, items, drawBackground, bounds =
         }
       }
       drawExitMarker(ctx, EXIT_POS.x, EXIT_POS.y);
-      drawPlayer(ctx, game.player);
+      for (const hz of scene.hazards) drawHazard(ctx, hz);
+      // blink while invincible: skip the draw on alternating 0.1s slices
+      if (!isInvincible(game.player) || Math.floor(game.player.invincibleTimer * 10) % 2 === 0) {
+        drawPlayer(ctx, game.player);
+      }
       drawHud(ctx, label, `${siteProgress(game.state, siteId)}/${SAMPLES_PER_SITE}`);
+      if (scene.hazards.length > 0) drawHearts(ctx, game.player.hearts);
     },
   };
   return scene;

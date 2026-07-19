@@ -54,4 +54,10 @@ export default createSiteScene({
   ],
   drawBackground,
   bounds: { x: 0, y: 88, w: 320, h: 92 },
+  hazards: [
+    // fox loping the length of the trail
+    { x1: 10, y1: 118, x2: 296, y2: 118, speed: 55, w: 16, h: 10, kind: 'fox' },
+    // possum shuffling a short diagonal by the creek
+    { x1: 24, y1: 158, x2: 96, y2: 168, speed: 30, w: 12, h: 8, kind: 'possum' },
+  ],
 });

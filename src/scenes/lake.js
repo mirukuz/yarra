@@ -58,4 +58,10 @@ export default createSiteScene({
   ],
   drawBackground,
   bounds: { x: 0, y: 114, w: 320, h: 66 },
+  hazards: [
+    // territorial black swan patrolling the waterline past the jetty
+    { x1: 60, y1: 116, x2: 250, y2: 116, speed: 48, w: 13, h: 10, kind: 'swan' },
+    // tangle of litter drifting along the shore path
+    { x1: 290, y1: 146, x2: 20, y2: 146, speed: 34, w: 14, h: 8, kind: 'litter' },
+  ],
 });
