@@ -1,4 +1,5 @@
 import { movePlayer } from '../player.js';
+import { rectsOverlap } from '../collision.js';
 import {
   isSiteComplete, isDatacenterUnlocked, totalProgress, TOTAL_SAMPLES,
 } from '../game-state.js';
@@ -10,11 +11,34 @@ const NODE_RADIUS = 18;
 const SPAWN = { x: 156, y: 88 };
 
 const NODES = [
-  { id: 'lake', label: 'ALBERT PARK', x: 55, y: 105, color: '#3a7ca5' },
+  { id: 'lake', label: 'ALBERT PARK', x: 90, y: 95, color: '#3a7ca5' },
   { id: 'forest', label: 'DANDENONG', x: 250, y: 40, color: '#2e5231' },
-  { id: 'ocean', label: 'ST KILDA', x: 75, y: 155, color: '#2f6f95' },
+  { id: 'ocean', label: 'ST KILDA', x: 122, y: 128, color: '#2f6f95' },
   { id: 'datacenter', label: 'DATA CENTRE', x: 255, y: 110, color: '#5a5a66' },
 ];
+
+// Single source of truth for every water tile on the map — used both to draw
+// the river/bay/pond and to block player movement, so visuals and collision
+// can never diverge.
+const WATER = [
+  // Yarra river — winds from top-right to bottom-left
+  { x: 200, y: 0, w: 16, h: 50 },
+  { x: 160, y: 44, w: 56, h: 14 },
+  { x: 120, y: 52, w: 48, h: 14 },
+  { x: 60, y: 60, w: 68, h: 14 },
+  { x: 20, y: 68, w: 48, h: 60 },
+  { x: 0, y: 120, w: 40, h: 14 },
+  // Port Phillip Bay — fills the bottom-left corner, fed by the river mouth
+  { x: 0, y: 128, w: 100, h: 52 },
+  { x: 0, y: 112, w: 46, h: 20 },
+  { x: 100, y: 150, w: 30, h: 30 },
+  // small pond by Albert Park
+  { x: 38, y: 118, w: 14, h: 9 },
+];
+
+function isInWater(rect) {
+  return WATER.some((w) => rectsOverlap(rect, w));
+}
 
 // deterministic pseudo-scatter (no per-frame randomness, so nothing flickers)
 function scatterDots(ctx, x0, y0, x1, y1, step, mod, threshold, size) {
@@ -70,35 +94,24 @@ function drawBackground(ctx) {
   // so they read as leading up to the shoreline / disappearing into town)
   for (const node of NODES) drawDashedPath(ctx, SPAWN.x, SPAWN.y, node.x, node.y);
 
-  // Yarra river — winds from top-right to bottom-left
+  // all water — river, bay and pond — drawn from the single WATER source of
+  // truth so the art can never drift out of sync with movement blocking
   ctx.fillStyle = '#3a7ca5';
-  ctx.fillRect(200, 0, 16, 50);
-  ctx.fillRect(160, 44, 56, 14);
-  ctx.fillRect(120, 52, 48, 14);
-  ctx.fillRect(60, 60, 68, 14);
-  ctx.fillRect(20, 68, 48, 60);
-  ctx.fillRect(0, 120, 40, 14);
+  for (const w of WATER) ctx.fillRect(w.x, w.y, w.w, w.h);
 
-  // Port Phillip Bay — fills the bottom-left corner, fed by the river mouth
-  ctx.fillStyle = '#3a7ca5';
-  ctx.fillRect(0, 128, 100, 52);
-  ctx.fillRect(0, 112, 46, 20);
-  ctx.fillRect(100, 150, 30, 30);
-  // sandy shoreline
+  // sandy shoreline — each strip hugs an actual land/water edge from WATER
   ctx.fillStyle = '#d8c48a';
-  ctx.fillRect(46, 110, 54, 2);   // along the top edge of the upper bay arm (x 46-100 at y 112)
-  ctx.fillRect(100, 128, 2, 22);  // along the bay's right edge (grass side), y 128-150
-  ctx.fillRect(102, 148, 28, 2);  // along the top of the water pocket (x 100-130 at y 150)
-  ctx.fillRect(130, 150, 2, 30);  // along the water pocket's right edge, y 150-180
+  ctx.fillRect(0, 110, 46, 2);    // land side of the upper bay arm's top edge (0,112,46,20)
+  ctx.fillRect(100, 128, 2, 22);  // land side of the bay's right edge (0,128,100,52), y 128-150
+  ctx.fillRect(102, 146, 28, 4);  // beach patch on land side of the water pocket's top edge (100,150,30,30)
+  ctx.fillRect(130, 150, 2, 30);  // land side of the water pocket's right edge, y 150-180
   // wave highlights
   ctx.fillStyle = '#4a8cb5';
   for (const [wx, wy] of [[14, 140], [40, 152], [66, 146], [20, 165], [60, 168], [82, 158]]) {
     ctx.fillRect(wx, wy, 4, 1);
   }
 
-  // small pond by Albert Park
-  ctx.fillStyle = '#3a7ca5';
-  ctx.fillRect(38, 118, 14, 9);
+  // pond ripple highlight
   ctx.fillStyle = '#4a8cb5';
   ctx.fillRect(40, 121, 4, 1);
 
@@ -229,7 +242,16 @@ const scene = {
 
   update(dt, game) {
     const { dx, dy } = game.input.getVector();
-    movePlayer(game.player, dx, dy, dt, BOUNDS);
+
+    // Resolve movement per axis so the player can slide along shorelines
+    // instead of sticking when moving diagonally into water.
+    const beforeX = game.player.x;
+    movePlayer(game.player, dx, 0, dt, BOUNDS);
+    if (isInWater(game.player)) game.player.x = beforeX;
+
+    const beforeY = game.player.y;
+    movePlayer(game.player, 0, dy, dt, BOUNDS);
+    if (isInWater(game.player)) game.player.y = beforeY;
 
     const px = game.player.x + game.player.w / 2;
     const py = game.player.y + game.player.h / 2;
