@@ -180,6 +180,13 @@ export function drawHazard(ctx, hazard) {
       const segs = [
         [0, 2, 14], [12, 0, 16], [26, 3, 12], [36, 1, 16], [50, 2, 12], [60, 0, 12],
       ];
+      // translucent sheet of sea water trailing from the waterline to the
+      // crest, so the wash visually connects back to the ocean
+      const sheetTop = hazard.start.y + 4;
+      if (y > sheetTop) {
+        ctx.fillStyle = 'rgba(74, 140, 181, 0.55)';
+        ctx.fillRect(x, sheetTop, hazard.w, y - sheetTop);
+      }
       ctx.fillStyle = '#4a8cb5';
       for (const [ox, oy, sw] of segs) {
         ctx.fillRect(x + ox, y + oy + 2, Math.min(sw, hazard.w - ox), 3);
