@@ -58,7 +58,7 @@ export default createSiteScene({
   bounds: { x: 0, y: 104, w: 320, h: 76 },
   hazards: [
     // wave-wash sweeping up and down the beach
-    { x1: 118, y1: 106, x2: 118, y2: 168, speed: 40, w: 24, h: 8, kind: 'wave' },
+    { x1: 60, y1: 106, x2: 60, y2: 166, speed: 38, w: 72, h: 6, kind: 'wave' },
     // gull tracking the tideline
     { x1: 296, y1: 110, x2: 16, y2: 110, speed: 52, w: 12, h: 8, kind: 'gull' },
   ],

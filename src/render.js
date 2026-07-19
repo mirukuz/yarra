@@ -176,13 +176,20 @@ export function drawHazard(ctx, hazard) {
       ctx.fillStyle = '#f5b5c5';
       ctx.fillRect(fx(10, 1), y + 1, 1, 1); // nose
       break;
-    case 'wave': // foamy wash sweeping the sand
+    case 'wave': { // rolling foam front — several staggered crests
+      const segs = [
+        [0, 2, 14], [12, 0, 16], [26, 3, 12], [36, 1, 16], [50, 2, 12], [60, 0, 12],
+      ];
       ctx.fillStyle = '#4a8cb5';
-      ctx.fillRect(x, y + 2, 24, 5);
+      for (const [ox, oy, sw] of segs) {
+        ctx.fillRect(x + ox, y + oy + 2, Math.min(sw, hazard.w - ox), 3);
+      }
       ctx.fillStyle = '#e8f0f2';
-      ctx.fillRect(x + 1, y, 8, 3);
-      ctx.fillRect(x + 12, y + 1, 9, 2);
+      for (const [ox, oy, sw] of segs) {
+        ctx.fillRect(x + ox, y + oy, Math.min(sw, hazard.w - ox), 2);
+      }
       break;
+    }
     case 'gull': // white body, grey wing, yellow beak
       ctx.fillStyle = '#f0f0f0';
       ctx.fillRect(fx(2, 8), y + 2, 8, 4);
