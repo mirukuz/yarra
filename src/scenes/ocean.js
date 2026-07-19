@@ -31,10 +31,10 @@ function drawBackground(ctx) {
   ctx.fillRect(0, 120, 320, 60);
   // pier posts
   ctx.fillStyle = '#6e5a43';
-  ctx.fillRect(168, 100, 6, 40);
-  ctx.fillRect(188, 104, 6, 36);
+  ctx.fillRect(20, 100, 6, 40);
+  ctx.fillRect(40, 104, 6, 36);
   ctx.fillStyle = '#7a6650';
-  ctx.fillRect(162, 96, 36, 6);
+  ctx.fillRect(14, 96, 36, 6);
   // rocks
   ctx.fillStyle = '#8a8a8a';
   ctx.fillRect(150, 126, 14, 8);
@@ -50,7 +50,7 @@ export default createSiteScene({
   label: 'St Kilda Beach',
   items: [
     { id: 'line-rocks', kind: 'line', x: 158, y: 124 },  // between the rocks
-    { id: 'line-pier', kind: 'line', x: 184, y: 136 },   // around a pier post
+    { id: 'line-pier', kind: 'line', x: 36, y: 136 },   // around a pier post
     { id: 'cap-sand', kind: 'cap', x: 120, y: 156 },     // half-buried in sand
     { id: 'bag-seaweed', kind: 'bag', x: 240, y: 146 },  // in the seaweed pile
   ],
