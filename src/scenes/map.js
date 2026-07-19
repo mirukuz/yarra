@@ -241,7 +241,12 @@ const scene = {
   },
 
   update(dt, game) {
-    const { dx, dy } = game.input.getVector();
+    let { dx, dy } = game.input.getVector();
+    if (dx !== 0 && dy !== 0) {
+      // per-axis moves below skip movePlayer's diagonal normalization; do it here
+      dx *= Math.SQRT1_2;
+      dy *= Math.SQRT1_2;
+    }
 
     // Resolve movement per axis so the player can slide along shorelines
     // instead of sticking when moving diagonally into water.
