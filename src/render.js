@@ -130,3 +130,89 @@ export function drawHud(ctx, label, progressText) {
     ctx.fillText(progressText, 88, 7);
   }
 }
+
+export function drawHazard(ctx, hazard) {
+  const x = Math.round(hazard.x);
+  const y = Math.round(hazard.y);
+  const flip = hazard.facingLeft;
+  // helper: mirror an x-offset within the hazard's width when facing left
+  const fx = (ox, w) => (flip ? x + hazard.w - ox - w : x + ox);
+  switch (hazard.kind) {
+    case 'swan': // territorial black swan — body, S-neck, red bill
+      ctx.fillStyle = '#1a1a1a';
+      ctx.fillRect(fx(1, 9), y + 4, 9, 5);
+      ctx.fillRect(fx(9, 2), y, 2, 6);
+      ctx.fillStyle = '#cc3311';
+      ctx.fillRect(fx(11, 2), y, 2, 2);
+      ctx.fillStyle = '#e8f0f2'; // wake ripple
+      ctx.fillRect(fx(0, 4), y + 9, 4, 1);
+      break;
+    case 'litter': // drifting tangle of rubbish
+      ctx.fillStyle = '#8a8a7a';
+      ctx.fillRect(x, y + 2, 14, 5);
+      ctx.fillStyle = '#cfd8dc';
+      ctx.fillRect(x + 2, y, 4, 3);
+      ctx.fillStyle = '#ff5533';
+      ctx.fillRect(x + 8, y + 1, 3, 3);
+      ctx.fillStyle = '#4a8cb5';
+      ctx.fillRect(x + 1, y + 6, 12, 1);
+      break;
+    case 'fox': // rust body, dark legs, white tail tip
+      ctx.fillStyle = '#c8622d';
+      ctx.fillRect(fx(2, 11), y + 2, 11, 5);
+      ctx.fillRect(fx(12, 4), y, 4, 4); // head + ears
+      ctx.fillStyle = '#f0f0f0';
+      ctx.fillRect(fx(0, 3), y + 3, 3, 3); // tail tip
+      ctx.fillStyle = '#2b2118';
+      ctx.fillRect(fx(3, 2), y + 7, 2, 3);
+      ctx.fillRect(fx(10, 2), y + 7, 2, 3);
+      break;
+    case 'possum': // grey hunched body, curled tail
+      ctx.fillStyle = '#6e6a63';
+      ctx.fillRect(fx(2, 8), y + 2, 8, 5);
+      ctx.fillRect(fx(8, 3), y, 3, 4); // head
+      ctx.fillStyle = '#4a463f';
+      ctx.fillRect(fx(0, 3), y + 1, 3, 2); // tail curl
+      ctx.fillStyle = '#f5b5c5';
+      ctx.fillRect(fx(10, 1), y + 1, 1, 1); // nose
+      break;
+    case 'wave': // foamy wash sweeping the sand
+      ctx.fillStyle = '#4a8cb5';
+      ctx.fillRect(x, y + 2, 24, 5);
+      ctx.fillStyle = '#e8f0f2';
+      ctx.fillRect(x + 1, y, 8, 3);
+      ctx.fillRect(x + 12, y + 1, 9, 2);
+      break;
+    case 'gull': // white body, grey wing, yellow beak
+      ctx.fillStyle = '#f0f0f0';
+      ctx.fillRect(fx(2, 8), y + 2, 8, 4);
+      ctx.fillStyle = '#9aa5ab';
+      ctx.fillRect(fx(3, 6), y, 6, 3); // raised wing
+      ctx.fillStyle = '#ffe97a';
+      ctx.fillRect(fx(10, 2), y + 3, 2, 1);
+      break;
+    default:
+      ctx.fillStyle = '#ff5533';
+      ctx.fillRect(x, y, hazard.w, hazard.h);
+  }
+}
+
+export function drawHearts(ctx, hearts) {
+  for (let i = 0; i < 3; i++) {
+    const hx = 282 + i * 12;
+    const hy = 6;
+    const filled = i < hearts;
+    ctx.fillStyle = filled ? '#e5484d' : 'rgba(10, 14, 18, 0.55)';
+    // 7px-wide pixel heart: two bumps, tapering point
+    ctx.fillRect(hx + 1, hy, 2, 2);
+    ctx.fillRect(hx + 4, hy, 2, 2);
+    ctx.fillRect(hx, hy + 1, 7, 3);
+    ctx.fillRect(hx + 1, hy + 4, 5, 1);
+    ctx.fillRect(hx + 2, hy + 5, 3, 1);
+    ctx.fillRect(hx + 3, hy + 6, 1, 1);
+    if (!filled) {
+      ctx.strokeStyle = '#e5484d';
+      ctx.strokeRect(hx + 0.5, hy + 1.5, 6, 2);
+    }
+  }
+}
