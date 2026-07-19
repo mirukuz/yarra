@@ -182,10 +182,10 @@ export function drawHazard(ctx, hazard) {
       ];
       // translucent sheet of sea water trailing from the waterline to the
       // crest, so the wash visually connects back to the ocean
-      const sheetTop = hazard.start.y + 4;
-      if (y > sheetTop) {
+      const sheetTop = hazard.start.y;
+      if (y + 6 > sheetTop) {
         ctx.fillStyle = 'rgba(74, 140, 181, 0.55)';
-        ctx.fillRect(x, sheetTop, hazard.w, y - sheetTop);
+        ctx.fillRect(x, sheetTop, hazard.w, y + 6 - sheetTop);
       }
       ctx.fillStyle = '#4a8cb5';
       for (const [ox, oy, sw] of segs) {
