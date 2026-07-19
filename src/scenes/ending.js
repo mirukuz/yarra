@@ -30,6 +30,9 @@ const scene = {
     ctx.fillRect(66, 78, 2, 7);
     ctx.fillRect(250, 92, 8, 5);
     ctx.fillRect(256, 86, 2, 7);
+    ctx.fillStyle = '#cc3311';
+    ctx.fillRect(67, 77, 2, 2);
+    ctx.fillRect(257, 85, 2, 2);
     // Mei watching, back turned (simple silhouette)
     ctx.fillStyle = '#1a1a1a';
     ctx.fillRect(154, 96, 12, 6);
