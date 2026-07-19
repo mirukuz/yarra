@@ -111,6 +111,17 @@ function drawBackground(ctx) {
     ctx.fillRect(wx, wy, 4, 1);
   }
 
+  // sailboats out on the bay
+  for (const [bx, by] of [[16, 148], [58, 160], [34, 170]]) {
+    ctx.fillStyle = '#f0ead6';                 // sail
+    ctx.fillRect(bx + 2, by - 6, 1, 5);
+    ctx.fillRect(bx + 3, by - 5, 2, 4);
+    ctx.fillRect(bx + 5, by - 4, 1, 3);
+    ctx.fillStyle = '#8a5a33';                 // hull
+    ctx.fillRect(bx, by, 7, 2);
+    ctx.fillRect(bx + 1, by + 2, 5, 1);
+  }
+
   // pond ripple highlight
   ctx.fillStyle = '#4a8cb5';
   ctx.fillRect(40, 121, 4, 1);
@@ -121,7 +132,7 @@ function drawBackground(ctx) {
     [238, 40, 1], [262, 42, 1.1], [278, 30, 1],
   ]) drawTree(ctx, tx, ty, ts);
   // a few lone trees scattered on the open grass
-  for (const [tx, ty] of [[24, 24], [110, 150], [190, 34], [130, 100]]) drawTree(ctx, tx, ty, 0.8);
+  for (const [tx, ty] of [[24, 24], [112, 106], [190, 34], [130, 100]]) drawTree(ctx, tx, ty, 0.8);
 
   // CBD tower cluster near the river bend
   const towers = [
