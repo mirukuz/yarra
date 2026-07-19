@@ -101,7 +101,7 @@ function drawBackground(ctx) {
 
   // sandy shoreline — each strip hugs an actual land/water edge from WATER
   ctx.fillStyle = '#d8c48a';
-  ctx.fillRect(0, 110, 46, 2);    // land side of the upper bay arm's top edge (0,112,46,20)
+  ctx.fillRect(0, 110, 20, 2);    // edges the grass above the upper bay arm at x 0-20
   ctx.fillRect(100, 128, 2, 22);  // land side of the bay's right edge (0,128,100,52), y 128-150
   ctx.fillRect(102, 146, 28, 4);  // beach patch on land side of the water pocket's top edge (100,150,30,30)
   ctx.fillRect(130, 150, 2, 30);  // land side of the water pocket's right edge, y 150-180
